@@ -1,0 +1,15 @@
+{
+  "name": "engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "COMP-07 engine, pure TypeScript",
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

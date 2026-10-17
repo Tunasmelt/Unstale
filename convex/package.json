@@ -1,0 +1,12 @@
+{
+  "name": "convex",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "COMP-03 Convex backend (initialised in P2)",
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --passWithNoTests"
+  }
+}

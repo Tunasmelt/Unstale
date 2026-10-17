@@ -1,0 +1,23 @@
+{
+  "name": "unstale-monorepo",
+  "private": true,
+  "license": "MIT",
+  "packageManager": "pnpm@10.29.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "check:docs": "python scripts/check_security_doc.py --security docs/SECURITY.md --architecture docs/ARCHITECTURE.md --phases docs/PHASES.md && python scripts/check_api_doc.py --doc docs/API.md --security docs/SECURITY.md --architecture docs/ARCHITECTURE.md --repo . --stale-days 30"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "eslint": "^9.39.5",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.71.2",
+    "vitest": "4.1.11"
+  }
+}
