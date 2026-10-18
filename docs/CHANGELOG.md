@@ -9,6 +9,12 @@ last_verified_commit: none
 
 ## [Unreleased]
 
+### 2026-10-18 — Render, setup runbook
+- DECISIONS: ADR-018 worker on Render (Docker web service); ADR-003 worker host superseded.
+- Railway replaced by Render in ARCHITECTURE, SECURITY (§1, §4, SEC-023, SEC-051, §7), API (EXT-05), PHASES (M0.3), PRODUCT (OQ-3), CLAUDE.md.
+- New `docs/SETUP.md`: npm reservation, GitHub App `unstale-dev`, Render, domain.
+- `.gitignore`: `*.pem`.
+
 ### 2026-10-17 — P0 scaffold
 - pnpm workspace (apps/web, apps/worker, apps/cli, packages/engine, convex), `tsconfig.base.json` strict, ESLint (typescript-eslint strict), Vitest 4.1.11, Zod 4 in engine; `.npmrc` save-exact.
 - CI: lint, typecheck, test, `pnpm audit --audit-level=high`, doc checkers, gitleaks.

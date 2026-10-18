@@ -1,7 +1,7 @@
 ---
 doc: DECISIONS
 last_verified_commit: none
-last_updated: 2026-10-17
+last_updated: 2026-10-18
 owner: Harris Shamsi
 ---
 
@@ -13,7 +13,7 @@ owner: Harris Shamsi
 |---|---|---|---|
 | ADR-001 | Document-agnostic claims, no framework adapters | accepted | 2026-10-12 |
 | ADR-002 | GitHub App PR check is v1; local mode v1.1; benchmark v1.2 | superseded by ADR-012 | 2026-10-14 |
-| ADR-003 | Stack: Next.js + Convex + Clerk + Railway worker, TypeScript throughout | accepted | 2026-10-14 |
+| ADR-003 | Stack: Next.js + Convex + Clerk + Railway worker, TypeScript throughout | accepted; worker host superseded by ADR-018 | 2026-10-14 |
 | ADR-004 | Deterministic first; LLM for Judgement and fix text only | accepted | 2026-10-14 |
 | ADR-005 | Bring-your-own LLM key via Vercel AI SDK | accepted | 2026-10-14 |
 | ADR-006 | Nothing writes silently: fixes are PR suggestions only | accepted | 2026-10-14 |
@@ -28,6 +28,7 @@ owner: Harris Shamsi
 | ADR-015 | MCP server: local stdio only, official TypeScript SDK | accepted | 2026-10-17 |
 | ADR-016 | Symbol extraction via `@ast-grep/napi` in both adapters | accepted | 2026-10-17 |
 | ADR-017 | Data retention: findings 90 days, idle local snapshots 30 days | accepted | 2026-10-17 |
+| ADR-018 | Worker hosted on Render instead of Railway | accepted | 2026-10-18 |
 
 ---
 
@@ -108,3 +109,8 @@ owner: Harris Shamsi
 - **Context:** `findings` and `localScans` hold short doc-derived text (claims, fix text) with no expiry; SECURITY §8 left retention open.
 - **Decision:** One daily Convex cron deletes `findings` whose run finished more than 90 days ago and `localScans` rows not updated for 30 days. `runs` rows stay as metadata (status, counts, timestamps). `deliveries` keep their 7-day prune.
 - **Consequences:** Dashboard history shows findings for the last 90 days only; a repo not scanned locally for 30 days drops off the Local view until the next upload. The privacy policy (REQ-015) states both periods.
+
+## ADR-018 — Worker on Render
+- **Context:** Owner uses Render, not Railway. ADR-003's reason for a container host (git, ripgrep, native `@ast-grep/napi`, jobs up to 8 min) still holds; only the host changes.
+- **Decision:** COMP-04 runs as a Render **web service** (Docker runtime, image built from `apps/worker/Dockerfile`), reachable over HTTPS by the Convex Workpool action (ADR-010). Secrets live in Render environment variables; the GitHub App private key may be a Render secret file. Everything else in ADR-003 stands.
+- **Consequences:** Render's free instances sleep when idle, so the first PR check after a quiet period waits for a cold start; acceptable in dev, a paid instance is chosen before launch (PRODUCT OQ-3). Health check uses `GET /health` (API-003). Railway rows in SECURITY and API become Render.

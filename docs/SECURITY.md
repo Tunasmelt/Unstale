@@ -12,7 +12,7 @@ status: draft
 
 ## 1. Scope, data classification & trust boundaries
 
-**In scope:** GitHub App, Convex backend, Railway worker, engine, LLM layer, web dashboard, local CLI (COMP-08), local MCP server (COMP-09), relay ingest.
+**In scope:** GitHub App, Convex backend, Render worker, engine, LLM layer, web dashboard, local CLI (COMP-08), local MCP server (COMP-09), relay ingest.
 **Out of scope / deliberately deferred:** formal pen test, SOC 2, org-member access control (ADR-009), browser local mode (v1.1 gets its own pass).
 
 | Data | Classification | Where it lives | Notes |
@@ -92,7 +92,7 @@ Status: `open` · `mitigated` · `accepted` (needs EXC-) · `retired`
 | SEC-020 | LLM keys sealed with the worker's X25519 public key (ADR-008); only ciphertext + last 4 stored | `pnpm --filter convex test keys.sealed` | THR-003 |
 | SEC-021 | No query or action ever returns a key or ciphertext to the client | `pnpm --filter convex test keys.notReturned` | THR-003 |
 | SEC-022 | Logs redact keys, tokens and `Authorization` headers | `pnpm --filter worker test log.redaction` · `pnpm --filter convex test log.redaction` · `pnpm --filter cli test log.redaction` | THR-003, THR-005, THR-015, THR-023 |
-| SEC-023 | Secrets only via platform env (Vercel, Convex, Railway); none committed | `gitleaks detect --no-banner` in CI | THR-023 |
+| SEC-023 | Secrets only via platform env (Vercel, Convex, Render); none committed | `gitleaks detect --no-banner` in CI | THR-023 |
 
 ### Worker isolation
 | ID | Rule | Enforcement | Mitigates |
@@ -114,7 +114,7 @@ Status: `open` · `mitigated` · `accepted` (needs EXC-) · `retired`
 | ID | Rule | Enforcement | Mitigates |
 |---|---|---|---|
 | SEC-050 | 50 runs/day and 1 concurrent job per installation; newer push supersedes queued run | `pnpm --filter convex test limits` | THR-007 |
-| SEC-051 | Railway spend alert and max instance count set | manual review (Railway dashboard) — candidate to automate | THR-007 |
+| SEC-051 | Render worker instance type and instance count capped; billing notifications on; monthly spend reviewed | manual review (Render dashboard) — candidate to automate | THR-007 |
 
 ### Output handling
 | ID | Rule | Enforcement | Mitigates |
@@ -161,11 +161,11 @@ Names only. Never values.
 | Name | Purpose | Stored in | Read by | Rotation |
 |---|---|---|---|---|
 | GITHUB_WEBHOOK_SECRET | verify webhooks | Convex env | COMP-03 | on exposure |
-| GITHUB_APP_PRIVATE_KEY | mint installation tokens | Railway env | COMP-04 | yearly; on exposure |
-| GITHUB_APP_ID | app identity (not secret) | Railway env | COMP-04 | n/a |
+| GITHUB_APP_PRIVATE_KEY | mint installation tokens | Render env or secret file | COMP-04 | yearly; on exposure |
+| GITHUB_APP_ID | app identity (not secret) | Render env | COMP-04 | n/a |
 | WORKER_URL | worker base URL (not secret) | Convex env | COMP-03 | n/a |
-| WORKER_HMAC_SECRET | sign Convex → worker calls | Convex env, Railway env | COMP-03, COMP-04 | quarterly |
-| KEY_SEAL_PRIVATE_KEY | open sealed LLM keys | Railway env | COMP-04 | on exposure (users re-enter keys) |
+| WORKER_HMAC_SECRET | sign Convex → worker calls | Convex env, Render env | COMP-03, COMP-04 | quarterly |
+| KEY_SEAL_PRIVATE_KEY | open sealed LLM keys | Render env | COMP-04 | on exposure (users re-enter keys) |
 | KEY_SEAL_PUBLIC_KEY | seal LLM keys (not secret) | Convex env | COMP-03 | with private key |
 | CLERK_SECRET_KEY | server-side Clerk | Vercel env | COMP-01 | on exposure |
 | NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY | client Clerk (public) | Vercel env | COMP-01 | n/a |
@@ -222,7 +222,7 @@ A trigger fires when the gate's changes touch its area; every fired trigger's ch
 
 ### GATE-5 — Dogfood + release
 - Triggers planned: T6, T10, T11
-- Checks: all earlier suites green in CI; Railway spend alert set (SEC-051); npm provenance publish (SEC-100); pinned versions in setup docs (SEC-103); `check_security_doc.py` passes; dependency audit (SEC-080, SEC-081).
+- Checks: all earlier suites green in CI; Render spend caps set (SEC-051); npm provenance publish (SEC-100); pinned versions in setup docs (SEC-103); `check_security_doc.py` passes; dependency audit (SEC-080, SEC-081).
 
 ## 6. Exceptions & accepted risks
 
@@ -235,8 +235,8 @@ Every exception must cite an ADR in DECISIONS.md.
 
 ## 7. Incident basics
 
-- Alerts: Railway and Convex email to owner; GitHub App webhook delivery failures visible in app settings.
-- GitHub App key exposure: generate new key in app settings → update Railway env → redeploy → delete old key → review app audit log.
+- Alerts: Render and Convex email to owner; GitHub App webhook delivery failures visible in app settings.
+- GitHub App key exposure: generate new key in app settings → update Render env → redeploy → delete old key → review app audit log.
 - Seal key exposure: rotate key pair → mark all `llmKeys` invalid → ask users to re-enter → notify users to rotate provider keys.
 - Data exposure: identify affected installations → preserve logs → notify installers.
 - CLI token store exposure: revoke all `cliTokens` (hashes only, but treat as compromised) → users create new tokens → purge `localScans`.

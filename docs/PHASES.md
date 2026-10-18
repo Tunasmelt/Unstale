@@ -27,7 +27,7 @@ budget: 5 weekends
 ## P0 — Setup
 - M0.1 pnpm workspace: `apps/web`, `apps/worker`, `apps/cli`, `packages/engine`, `convex/`; TypeScript strict; Zod.
 - M0.2 CI (GitHub Actions): lint, typecheck, test, gitleaks, audit.
-- M0.3 Accounts: Convex project, Clerk app (GitHub social login), Railway project, Vercel project, GitHub App `unstale-dev`; register `unstale.dev`; reserve npm package `unstale` with 2FA and trusted publishing configured.
+- M0.3 Accounts: Convex project, Clerk app (GitHub social login), Render workspace (worker web service), Vercel project, GitHub App `unstale-dev`; register `unstale.dev`; reserve npm package `unstale` with 2FA and trusted publishing configured.
 
 ### GATE-0
 - Commands: `pnpm -r lint && pnpm -r typecheck && pnpm -r test` · `gitleaks detect --no-banner` · `pnpm audit --audit-level=high`

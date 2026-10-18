@@ -6,7 +6,7 @@ Keeps docs true while you code and on every PR: flags doc lines your changes mad
 `docs/HANDOFF.md` (where we are) → `docs/PHASES.md` (current gate) → `docs/ARCHITECTURE.md`. Requirements: `docs/PRODUCT.md` (REQ-IDs). Decisions: `docs/DECISIONS.md`. Security: `docs/SECURITY.md`. Endpoints and external APIs: `docs/API.md`.
 
 ## Stack
-Next.js 16 on Vercel (`apps/web`) · Convex (`convex/`) · Clerk · TypeScript worker on Railway (`apps/worker`, Hono, image has git, ripgrep) · engine (`packages/engine`, pure TS, `RepoIndex` adapters, symbols via `@ast-grep/napi` in both, ADR-016) · CLI + MCP (`apps/cli`, npm `unstale`, Node ≥ 20, `@modelcontextprotocol/sdk`, `@napi-rs/keyring`) · Vercel AI SDK v7 · pnpm workspaces · Zod at every boundary.
+Next.js 16 on Vercel (`apps/web`) · Convex (`convex/`) · Clerk · TypeScript worker on Render (`apps/worker`, Docker web service, Hono, image has git, ripgrep) · engine (`packages/engine`, pure TS, `RepoIndex` adapters, symbols via `@ast-grep/napi` in both, ADR-016) · CLI + MCP (`apps/cli`, npm `unstale`, Node ≥ 20, `@modelcontextprotocol/sdk`, `@napi-rs/keyring`) · Vercel AI SDK v7 · pnpm workspaces · Zod at every boundary.
 
 ## Commands
 - `pnpm -r lint && pnpm -r typecheck && pnpm -r test`

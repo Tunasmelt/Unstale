@@ -1,7 +1,7 @@
 ---
 doc: API
 last_verified_commit: none
-last_updated: 2026-10-17
+last_updated: 2026-10-18
 owner: Harris Shamsi
 openapi_source: none yet — worker (Hono) to export via zod-openapi in P2; Convex functions listed by hand
 ---
@@ -70,7 +70,7 @@ Status: `active` · `deprecated` · `removed`
 | EXT-02 | Convex | Backend, DB, Workpool | COMP-03 | n/a | convex@1.46.0, @convex-dev/workpool@0.4.14 | CONVEX_DEPLOY_KEY | all app data | 2026-10-15 | active |
 | EXT-03 | Clerk | Sign-in (GitHub social) | COMP-02 | n/a | @clerk/nextjs@7.9.15 | CLERK_SECRET_KEY | GitHub user id, email | 2026-10-15 | active |
 | EXT-04 | LLM providers via Vercel AI SDK | Judgement + fix text | COMP-05 | provider default | ai@7.0.140, @ai-sdk/anthropic@4.0.79, @ai-sdk/openai@4.0.93, @ai-sdk/google@4.0.95 | user keys (sealed) | doc sections + related code snippets | 2026-10-15 | active |
-| EXT-05 | Railway | Worker hosting | COMP-04 | n/a | none | none | none | 2026-10-15 | active |
+| EXT-05 | Render | Worker hosting (Docker web service, ADR-018) | COMP-04 | n/a | none | none | none | 2026-10-18 | active |
 | EXT-06 | Vercel | Web hosting | COMP-01 | n/a | next@16.4.1 | none | none | 2026-10-15 | active |
 | EXT-07 | Model Context Protocol (stdio) | Local MCP server for coding agents | COMP-09 | spec 2025-11-25 (SDK default); 2026-07-28 tracked | @modelcontextprotocol/sdk@1.32.1 | none | findings + diffs to the local agent only | 2026-10-17 | active |
 | EXT-08 | OS keychain (macOS Keychain, Windows Credential Manager, Secret Service) | Store CLI token | COMP-08 | n/a | @napi-rs/keyring@2.1.1 | CLI tokens | CLI token | 2026-10-17 | active |

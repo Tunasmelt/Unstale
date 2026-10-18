@@ -95,11 +95,11 @@ Document-agnostic: works on any markdown, no per-framework adapters. Determinist
 - Users accept bringing their own LLM key for Judgement features.
 - Most stale claims in agent-written repos are mechanical (paths, scripts, versions), so Verified-only already delivers value locally.
 - Users who want local detection are comfortable running one `npx` command.
-- Railway worker cost at 50 runs/day/installation stays within a hobby budget for early adoption.
+- Render worker cost at 50 runs/day/installation stays within a hobby budget for early adoption.
 
 ## Open questions
 
 - OQ-1: Org installations with several members — v1 grants dashboard access to the installing GitHub user only (ADR-009). Is org-member access needed before launch?
 - OQ-2: Default model per provider — pin exact model IDs during P3 against live provider docs.
-- OQ-3: Worker cost ceiling — set a monthly Railway spend alert value.
+- OQ-3: Worker cost ceiling — choose the Render instance type (free sleeps when idle) and a monthly spend limit before launch.
 - OQ-4: Re-test Clerk Device Authorization Grant token verification in v1.1 to replace pasted CLI tokens (ADR-014).

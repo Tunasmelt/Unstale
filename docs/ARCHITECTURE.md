@@ -1,7 +1,7 @@
 ---
 doc: ARCHITECTURE
 last_verified_commit: none
-last_updated: 2026-10-17
+last_updated: 2026-10-18
 owner: Harris Shamsi
 status: draft
 ---
@@ -17,7 +17,7 @@ status: draft
 | COMP-01 | Web app | Next.js 16 (App Router) | Vercel | Landing page; dashboard (installations, runs, findings, key field, Local view, CLI tokens) |
 | COMP-02 | Auth | Clerk (`@clerk/nextjs`) with GitHub social login; Convex via `ConvexProviderWithClerk` | Clerk | Sign-in; session JWT carries the user's GitHub user id as a custom claim |
 | COMP-03 | Backend | Convex (HTTP actions, queries, mutations, Workpool, crons, database) | Convex cloud | Webhook intake, job queue, run limits, findings store, sealed LLM keys, CLI token store, local-scan relay ingest |
-| COMP-04 | Worker | Node 22 + TypeScript HTTP service (Hono) with `git`, `ripgrep` in the image; symbols via `@ast-grep/napi` (ADR-016) | Railway | Clone at commit, build repo index, run engine, call LLM, post check run + review to GitHub, delete clone |
+| COMP-04 | Worker | Node 22 + TypeScript HTTP service (Hono) with `git`, `ripgrep` in the image; symbols via `@ast-grep/napi` (ADR-016) | Render (Docker web service, ADR-018) | Clone at commit, build repo index, run engine, call LLM, post check run + review to GitHub, delete clone |
 | COMP-05 | LLM layer | Vercel AI SDK (`ai` v7) with Anthropic / OpenAI / Google providers | Inside COMP-04 only | Judgement pass on affected sections; fix text; structured output only |
 | COMP-06 | GitHub integration | GitHub App; Octokit (`@octokit/app`, `@octokit/webhooks`) | GitHub ↔ COMP-03/04 | Webhooks in; installation tokens; Checks API and pull request reviews out |
 | COMP-07 | Engine | `packages/engine` (pure TypeScript, no Node-only APIs in core) | COMP-04, COMP-08; browser in v1.1 | Markdown parse, claim extraction, classification, verification, edit-mode resolution, fix generation |
@@ -134,7 +134,7 @@ local:
 | Env | Web | Convex | Worker | GitHub App | CLI |
 |---|---|---|---|---|---|
 | dev | `localhost:3000` | dev deployment | local Docker, exposed via tunnel | `unstale-dev` app | `pnpm --filter cli dev`, `UNSTALE_API_URL` → dev Convex site |
-| prod | Vercel `unstale.dev`, `app.unstale.dev` | prod deployment | Railway service | `unstale` app | npm `unstale` (provenance-signed publish from CI) |
+| prod | Vercel `unstale.dev`, `app.unstale.dev` | prod deployment | Render web service | `unstale` app | npm `unstale` (provenance-signed publish from CI) |
 
 Secrets per env are listed in SECURITY.md §4 (names only).
 
