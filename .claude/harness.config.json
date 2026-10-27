@@ -1,0 +1,290 @@
+{
+  "$comment": "Solo harness config. Every hook reads this. Edit freely; run `node .claude/harness/harness.mjs doctor` after changes.",
+  "branchPolicy": {
+    "$comment": "deny | warn | off. Code edits on a protected branch are denied (deny) or flagged (warn). Process files are always allowed.",
+    "mode": "deny",
+    "protected": [
+      "main",
+      "master"
+    ]
+  },
+  "processGlobs": [
+    "docs/**",
+    ".claude/**",
+    ".harness/**",
+    "*.md",
+    ".gitignore"
+  ],
+  "readOnlyGlobs": [
+    ".env",
+    ".env.*",
+    "!.env.example"
+  ],
+  "hardStops": [
+    {
+      "id": "HS-force-push",
+      "pattern": "git\\s+push\\b.*(--force\\b|--force-with-lease\\b|\\s-f\\b)",
+      "reason": "Force push rewrites remote history."
+    },
+    {
+      "id": "HS-push-main",
+      "pattern": "git\\s+push\\b.*\\b(main|master)\\b",
+      "reason": "Pushing to main ships to everyone and may trigger a deploy."
+    },
+    {
+      "id": "HS-reset-hard",
+      "pattern": "git\\s+(reset\\s+--hard|clean\\s+-[a-zA-Z]*f|checkout\\s+--\\s+\\.)",
+      "reason": "Discards uncommitted work irreversibly."
+    },
+    {
+      "id": "HS-rm-rf",
+      "pattern": "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f|\\brm\\s+-[a-zA-Z]*f[a-zA-Z]*r",
+      "reason": "Recursive force delete."
+    },
+    {
+      "id": "HS-prod-deploy",
+      "pattern": "(vercel\\b.*--prod|vercel\\s+promote|render\\s+deploy|\\bconvex\\s+deploy\\b)",
+      "reason": "Production deploy."
+    },
+    {
+      "id": "HS-remote-db",
+      "pattern": "\\bconvex\\b.*(--prod\\b|\\bimport\\b)",
+      "reason": "Touches the production Convex deployment."
+    },
+    {
+      "id": "HS-destructive-sql",
+      "pattern": "\\b(DROP\\s+(TABLE|SCHEMA|DATABASE)|TRUNCATE\\s+)",
+      "reason": "Destructive SQL."
+    },
+    {
+      "id": "HS-publish",
+      "pattern": "\\b(npm|pnpm|yarn)\\s+publish\\b|\\btwine\\s+upload\\b|\\buv\\s+publish\\b",
+      "reason": "Publishes a package publicly."
+    }
+  ],
+  "denyCommands": [
+    {
+      "id": "HS-pipe-to-shell",
+      "pattern": "(curl|wget)\\b[^|]*\\|\\s*(sudo\\s+)?(sh|bash|zsh|python3?)\\b",
+      "reason": "Piping a download into a shell runs unreviewed code. Download the script, show it to the user, run it only if they approve."
+    },
+    {
+      "id": "R-env-values",
+      "pattern": "(\\b(cat|less|more|head|tail|bat|nl|strings|xxd|source)\\b|^\\s*\\.\\s)[^|;&]*(^|[\\s/])\\.env(\\.(?!example)[\\w.-]+)?(\\s|$|[;|&])",
+      "reason": "This prints secret VALUES into the conversation. Inspect names only: cut -d= -f1 .env (or grep -c '^KEY=' .env to test presence)."
+    }
+  ],
+  "secretPatterns": [
+    {
+      "id": "SK-private-key",
+      "pattern": "-----BEGIN (RSA |EC |OPENSSH |DSA |)PRIVATE KEY-----"
+    },
+    {
+      "id": "SK-anthropic",
+      "pattern": "sk-ant-[A-Za-z0-9_-]{20,}"
+    },
+    {
+      "id": "SK-openai",
+      "pattern": "\\bsk-(proj-)?[A-Za-z0-9]{32,}"
+    },
+    {
+      "id": "SK-aws",
+      "pattern": "\\bAKIA[0-9A-Z]{16}\\b"
+    },
+    {
+      "id": "SK-github",
+      "pattern": "\\b(ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{60,})\\b"
+    },
+    {
+      "id": "SK-slack",
+      "pattern": "\\bxox[baprs]-[A-Za-z0-9-]{10,}"
+    },
+    {
+      "id": "SK-jwt",
+      "pattern": "\\beyJ[A-Za-z0-9_-]{15,}\\.eyJ[A-Za-z0-9_-]{15,}\\.[A-Za-z0-9_-]{15,}"
+    },
+    {
+      "id": "SK-stripe",
+      "pattern": "\\b(sk|rk)_live_[A-Za-z0-9]{20,}"
+    },
+    {
+      "id": "SK-clerk",
+      "pattern": "\\bsk_(live|test)_[A-Za-z0-9]{20,}"
+    },
+    {
+      "id": "SK-npm",
+      "pattern": "\\bnpm_[A-Za-z0-9]{36}\\b"
+    },
+    {
+      "id": "SK-render",
+      "pattern": "\\brnd_[A-Za-z0-9]{20,}"
+    }
+  ],
+  "secretAllowGlobs": [
+    ".env.example",
+    "**/*.test.*",
+    "**/__fixtures__/**"
+  ],
+  "ratchets": [
+    {
+      "id": "RT-ts-any",
+      "glob": "**/*.{ts,tsx}",
+      "exclude": [
+        "**/*.d.ts",
+        "**/*.test.*",
+        "**/*.spec.*"
+      ],
+      "pattern": "(:\\s*any\\b|\\bas\\s+any\\b|<any>)",
+      "message": "New `any`. Type it properly or use `unknown` + a guard."
+    },
+    {
+      "id": "RT-hex-color",
+      "glob": "apps/web/{app,components,src}/**/*.{tsx,jsx}",
+      "pattern": "#[0-9a-fA-F]{3,8}\\b",
+      "message": "New hardcoded colour. Use a design token / Tailwind theme value."
+    },
+    {
+      "id": "RT-console-log",
+      "glob": "**/*.{ts,tsx,js,jsx,mjs}",
+      "exclude": [
+        "scripts/**",
+        ".claude/**",
+        "**/*.test.*",
+        "**/*.spec.*"
+      ],
+      "pattern": "\\bconsole\\.log\\(",
+      "message": "New console.log. Use the project logger or remove before commit."
+    },
+    {
+      "id": "RT-server-env-client",
+      "glob": "apps/web/**/*.{ts,tsx,js,jsx}",
+      "onlyIfContains": "^\\s*['\"]use client['\"]",
+      "pattern": "process\\.env\\.(?!NEXT_PUBLIC_)[A-Z0-9_]+",
+      "message": "Server-only env var referenced in a client component. Keep secrets (Clerk, Convex deploy, worker HMAC, LLM keys) server-side."
+    },
+    {
+      "id": "RT-py-bare-except",
+      "glob": "**/*.py",
+      "pattern": "^\\s*except\\s*:",
+      "message": "New bare `except:`. Catch a specific exception."
+    },
+    {
+      "id": "RT-py-type-ignore",
+      "glob": "**/*.py",
+      "pattern": "#\\s*type:\\s*ignore",
+      "message": "New `# type: ignore`. Fix the type or add a narrow ignore code with a reason."
+    }
+  ],
+  "docMap": [
+    {
+      "glob": "convex/**",
+      "docs": [
+        "docs/ARCHITECTURE.md",
+        "docs/SECURITY.md",
+        "docs/API.md"
+      ],
+      "why": "Convex schema, HTTP actions, access checks, retention"
+    },
+    {
+      "glob": "apps/worker/**",
+      "docs": [
+        "docs/ARCHITECTURE.md",
+        "docs/SECURITY.md"
+      ],
+      "why": "worker: HMAC auth, clone, spawn allow-list"
+    },
+    {
+      "glob": "{apps/web/app/api/**,apps/web/src/app/api/**}",
+      "docs": [
+        "docs/API.md"
+      ],
+      "why": "own API surface"
+    },
+    {
+      "glob": "{**/middleware.ts,**/auth/**}",
+      "docs": [
+        "docs/SECURITY.md"
+      ],
+      "why": "auth boundary"
+    },
+    {
+      "glob": "apps/cli/**",
+      "docs": [
+        "docs/ARCHITECTURE.md",
+        "docs/SECURITY.md",
+        "docs/API.md"
+      ],
+      "why": "CLI / MCP / relay / fix safety"
+    },
+    {
+      "glob": "packages/engine/**",
+      "docs": [
+        "docs/ARCHITECTURE.md",
+        "docs/PRODUCT.md"
+      ],
+      "why": "claim types, RepoIndex, guards"
+    },
+    {
+      "glob": ".github/workflows/**",
+      "docs": [
+        "docs/SECURITY.md",
+        "docs/PHASES.md"
+      ],
+      "why": "CI gates, gitleaks, audit, publish"
+    },
+    {
+      "glob": "{**/Dockerfile,render.yaml}",
+      "docs": [
+        "docs/ARCHITECTURE.md",
+        "docs/SECURITY.md"
+      ],
+      "why": "worker image / deploy"
+    },
+    {
+      "glob": "{package.json,**/package.json,pnpm-workspace.yaml}",
+      "docs": [
+        "docs/ARCHITECTURE.md",
+        "docs/API.md"
+      ],
+      "why": "stack / pinned external API versions"
+    },
+    {
+      "glob": ".env.example",
+      "docs": [
+        "docs/ARCHITECTURE.md",
+        "docs/SECURITY.md"
+      ],
+      "why": "env & secrets (SECURITY §4)"
+    }
+  ],
+  "handoff": {
+    "path": "docs/HANDOFF.md",
+    "maxLines": 40,
+    "auto": true
+  },
+  "processRatio": {
+    "$comment": "Warn when process commits exceed product commits over this window.",
+    "windowDays": 14,
+    "minCommits": 6
+  },
+  "adaptive": {
+    "$comment": "ACE-style playbook + watch-outs. reflect: after a session with failed commands, the Stop hook asks once for <=2 itemized lessons.",
+    "enabled": true,
+    "reflect": true,
+    "reflectMinFailures": 1,
+    "playbookPath": "docs/PLAYBOOK.md",
+    "playbookMax": 8,
+    "watchWindowDays": 14,
+    "watchMinHits": 2,
+    "watchMax": 3,
+    "hints": {
+      "R-branch": "run `git switch -c feat/<slug>` BEFORE the first code edit.",
+      "R-readonly": "never edit a .env file; tell the user which variable to add.",
+      "R-secrets": "read keys from env vars; put a placeholder in .env.example.",
+      "R-env-values": "inspect env names only: `cut -d= -f1 .env`.",
+      "HS": "hard-stop command: explain why and ask the user first.",
+      "R-learn": "record project-specific fixes in docs/PLAYBOOK.md."
+    }
+  },
+  "$comment_secrets": "Secret pattern ids use SK- so they never collide with SECURITY.md SEC-NNN ids."
+}

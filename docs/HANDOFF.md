@@ -1,27 +1,32 @@
 ---
 doc: HANDOFF
 last_verified_commit: none
-last_updated: 2026-10-18
+updated: 2026-10-28
 ---
+# HANDOFF  (overwritten every session by /close · cap 40 lines)
 
-# Handoff
+## Now
+- Phase / gate: P0 Setup · GATE-0 (CI green incl. gitleaks)  (docs/PHASES.md)
+- Branch: `main` (code edits now need a `feat/` or `fix/` branch: harness R-branch)
+- Brief: none
 
-> Overwritten every session.
+## State
+| Item | Grade | Evidence |
+|---|---|---|
+| M0.1 pnpm workspace (web, worker, cli, engine, convex; TS strict, Zod, ESLint, Vitest) | run-checked | pushed to Tunasmelt/Unstale `main` (378206f) |
+| M0.2 CI `.github/workflows/ci.yml` | hypothesis | file present; GATE-0 not run |
+| M0.3 accounts (npm `unstale`, GitHub App `unstale-dev`, Render, Convex, Vercel, Clerk, `unstale.dev`) | not started | owner task, `docs/SETUP.md` |
+| Solo harness v2 (`.claude/`, RULES, PLAYBOOK, briefs) | run-checked | `harness.mjs doctor` + `selftest` |
+| Next.js (P4), Convex (P2) | placeholders | not initialised |
 
-**Current phase:** P0 — Setup, in progress. M0.1 (pnpm workspace: apps/web, apps/worker, apps/cli, packages/engine, convex; TS strict; Zod; ESLint; Vitest) and M0.2 (`.github/workflows/ci.yml`) done locally, pushed to github.com/Tunasmelt/Unstale `main`. Placeholders only: Next.js (P4) and Convex (P2) are not initialised yet.
+## Next action
+1. Owner follows `docs/SETUP.md` (M0.3), then Clerk + Next.js in `apps/web` (Clerk app `app_3KrbFB6OLixkseXu7K6hlVZdsDp`) on a `feat/` branch → `/gate-review GATE-0`.
 
-**Phase order:** P0 → P1 → P2 → P3 → P4 → P6 (local) → P5 (release). Budget 5 weekends. Cut order if late: relay, then MCP.
+## Blockers / open questions
+- None for P0. PRODUCT OQ-1 (org-member access), OQ-2 (default model IDs), OQ-3 (worker spend ceiling), OQ-4 (CLI device grant, v1.1).
+- EXT-01…06 go stale 2026-11-14 (`check_api_doc.py --stale-days 30`): re-verify before then.
+- Known erratum: ADR-012 says THR-015…020; actual THR-015…022 (ADR append-only, left as is).
+- Decided: retention ADR-017; worker on Render ADR-018. Last gate passed: none.
 
-**Next action:** Owner follows `docs/SETUP.md`: reserve npm `unstale`, create GitHub App `unstale-dev`, Render workspace. Then Clerk + Next.js in `apps/web` (Clerk app `app_3KrbFB6OLixkseXu7K6hlVZdsDp`), then M0.3 complete → GATE-0 (CI green incl. gitleaks).
-
-**This session (2026-10-17, review):** ADR-016 (symbols via `@ast-grep/napi` in both adapters; worker spawns only `git`, `rg`). Added API-016 token-check, THR-023, SEC-101 upload coalescing, SEC-102 repo config can't enable relay, SEC-103 pinned versions in setup docs; stable finding IDs + `stale` error for MCP; `repoKey` credential strip. Re-applied earlier minors (component labels, per-package test names, doc links, UTC day, secrets rows, dogfood mode paths).
-
-**Blockers:** none for P0. Gate triggers T1–T11 defined (SECURITY §5), T7 checks in place for every gate that plans it. Doc checkers `scripts/check_security_doc.py` and `scripts/check_api_doc.py` exist and pass; EXT rows go stale 30 days after last verified (2026-11-14 for EXT-01…06).
-
-**Known erratum:** ADR-012 says THR-015…THR-020; actual rows are THR-015…THR-022 (ADR is append-only, left as is).
-
-**Decided:** retention (ADR-017); worker on Render, not Railway (ADR-018).
-
-**Open questions:** PRODUCT OQ-1 (org-member access), OQ-2 (default model IDs), OQ-3 (worker spend ceiling), OQ-4 (Clerk device grant for CLI login, v1.1).
-
-**Last gate passed:** none.
+## Tried and failed (don't repeat)
+- none

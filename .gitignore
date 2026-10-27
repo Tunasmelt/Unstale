@@ -8,3 +8,6 @@ coverage/
 .convex/
 .claude/data/
 *.pem
+
+# solo harness scratch
+.harness/tmp/
