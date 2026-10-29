@@ -1,6 +1,6 @@
 ---
 doc: PHASES
-last_verified_commit: none
+last_verified_commit: a37f180
 last_updated: 2026-10-28
 owner: Harris Shamsi
 budget: 5 weekends

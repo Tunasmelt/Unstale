@@ -1,6 +1,6 @@
 ---
 doc: API
-last_verified_commit: none
+last_verified_commit: a37f180
 last_updated: 2026-10-28
 owner: Harris Shamsi
 openapi_source: none yet — worker (Hono) to export via zod-openapi in P2; Convex functions listed by hand
