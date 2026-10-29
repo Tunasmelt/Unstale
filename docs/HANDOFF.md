@@ -34,3 +34,12 @@ updated: 2026-10-29
 
 ## Tried and failed (don't repeat)
 - none
+
+<!-- auto:start (hook-written from git + transcript; do not edit) -->
+## Auto · 2026-10-29 20:26
+- Branch: `fix/harness-progress`
+- Commits this session: 0762aaf Stamp API, ARCHITECTURE, PHASES, PRODUCT, SECURITY at a37f180 · a37f180 Harness corrections, Codex entry point, M1.1 markdown claim extraction
+- Uncommitted: docs/PLAYBOOK.md
+- Last test: `pnpm -r test >/dev/null 2>&1; echo "test=$?"; (pnpm -r lint && pnpm -r typecheck) >/dev/null 2>&1; e` → ok (exit 0)
+- Failed commands this session: 2
+<!-- auto:end -->
