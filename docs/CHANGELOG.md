@@ -9,6 +9,12 @@ last_verified_commit: none
 
 ## [Unreleased]
 
+### 2026-10-28 — Harness corrections, progress review, M1.1 extraction
+- Harness: CRLF-preserving stamps, all non-fresh docs visible at startup, PowerShell env-content guard, implicit protected-branch push guard, doctor validates deny regexes. Selftest adds seven regressions (42 total), excludes local `.claude/data` from scratch copies; CI runs doctor/selftest.
+- AGENTS.md loads shared rules for Codex and documents instruction-only enforcement.
+- Independent GATE-0 review recorded: committed CI passes, but local gitleaks and publishing/account evidence remain gaps. No gate declared passed.
+- Approved-B M1.1: pure `extractClaims` for inline code, local links/anchors/images, imports and shell commands; source lines and 1 MB UTF-8 cap. Sixteen extraction tests plus scaffold pass. Verification/adapters and hard deadline remain future work. markdown-it 15.0.3 added (EXT-10, MIT).
+
 ### 2026-10-18 — Render, setup runbook
 - DECISIONS: ADR-018 worker on Render (Docker web service); ADR-003 worker host superseded.
 - Railway replaced by Render in ARCHITECTURE, SECURITY (§1, §4, SEC-023, SEC-051, §7), API (EXT-05), PHASES (M0.3), PRODUCT (OQ-3), CLAUDE.md.

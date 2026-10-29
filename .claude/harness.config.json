@@ -64,6 +64,11 @@
   ],
   "denyCommands": [
     {
+      "id": "R-env-values",
+      "pattern": "\\b(Get-Content|gc|type)\\b[^|;&\\r\\n]*[\\s/\\\\\"']\\.env(\\.(?!example(?:[\\s\"']|$))[\\w.-]+)?(?=[\\s\"';|&]|$)",
+      "reason": "This can print secret VALUES. Inspect variable names only using a names-only parser; never print env file contents."
+    },
+    {
       "id": "HS-pipe-to-shell",
       "pattern": "(curl|wget)\\b[^|]*\\|\\s*(sudo\\s+)?(sh|bash|zsh|python3?)\\b",
       "reason": "Piping a download into a shell runs unreviewed code. Download the script, show it to the user, run it only if they approve."

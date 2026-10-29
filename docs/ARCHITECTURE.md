@@ -1,7 +1,7 @@
 ---
 doc: ARCHITECTURE
 last_verified_commit: none
-last_updated: 2026-10-18
+last_updated: 2026-10-28
 owner: Harris Shamsi
 status: draft
 ---
@@ -98,6 +98,8 @@ Access rule: every dashboard query resolves the caller's GitHub user id from the
 | Fix | deterministic replacement when unambiguous; else hand to COMP-05 for text (PR check only) |
 
 Core is pure TypeScript with an injected `RepoIndex` interface. Adapters: `CloneRepoIndex` (worker), `LocalRepoIndex` (CLI), browser adapter in v1.1. Both v1 adapters extract symbols with `@ast-grep/napi` (ADR-016). The same fixture suite runs against both v1 adapters (REQ-029).
+
+Implementation status (2026-10-28): `extractClaims(markdown, file)` in `packages/engine/src/extract.ts` uses markdown-it 15.0.3 block maps and inline rule source offsets. It returns candidate `{ file, line, source, text }` records, never Verified findings. Input over 1 MB UTF-8 throws `RangeError`; nesting is capped at 20. No file/process/network access. Adapters, verification, suppression, edit modes and fixes remain planned. A hard per-file execution deadline is not implemented by this synchronous extractor and remains a GATE-1 security gap.
 
 ## CLI commands (COMP-08 / COMP-09)
 
