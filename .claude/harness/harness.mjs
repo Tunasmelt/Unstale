@@ -36,7 +36,7 @@ function doctor() {
   for (const h of ["edit_guard.mjs", "post_edit.mjs", "bash_guard.mjs", "session.mjs"]) {
     ok(`hook wired: ${h}`, settings.includes(h) && existsSync(join(ROOT, ".claude/hooks", h)), "re-run install.mjs or merge settings.json");
   }
-  for (const r of (config().ratchets || []).concat(config().hardStops || [], config().secretPatterns || [])) {
+  for (const r of (config().ratchets || []).concat(config().hardStops || [], config().denyCommands || [], config().secretPatterns || [])) {
     let valid = true;
     try { new RegExp(r.pattern); } catch { valid = false; }
     if (!valid) ok(`regex ${r.id}`, false, "invalid regex in config");
@@ -62,13 +62,15 @@ function stamp() {
   for (const doc of args.filter((a) => !a.startsWith("--"))) {
     const p = join(ROOT, doc);
     if (!existsSync(p)) { console.error(`missing: ${doc}`); continue; }
-    let t = readFileSync(p, "utf8");
+    const original = readFileSync(p, "utf8");
+    const eol = original.includes("\r\n") ? "\r\n" : "\n";
+    let t = original.replace(/\r\n/g, "\n");
     if (/^---\n[\s\S]*?\n---/.test(t)) {
       t = /^---\n[\s\S]*?last_verified_commit:.*$/m.test(t.split(/\n---/)[0] + "\n")
         ? t.replace(/^(last_verified_commit:).*$/m, `$1 ${sha}`)
         : t.replace(/^---\n/, `---\nlast_verified_commit: ${sha}\n`);
     } else t = `---\nlast_verified_commit: ${sha}\n---\n\n` + t;
-    writeFileSync(p, t);
+    writeFileSync(p, t.replace(/\n/g, eol));
     console.log(`${doc} → last_verified_commit: ${sha}`);
   }
 }
@@ -100,7 +102,7 @@ function selftest() {
   const sh = (c, a) => execFileSync(c, a, { cwd: dir, stdio: "pipe", encoding: "utf8" });
   const results = [];
   try {
-    cpSync(src, join(dir, ".claude"), { recursive: true });
+    cpSync(src, join(dir, ".claude"), { recursive: true, filter: (p) => p !== join(src, "data") });
     sh("git", ["init", "-q", "-b", "main"]);
     sh("git", ["config", "user.email", "t@t"]); sh("git", ["config", "user.name", "t"]);
     mkdirSync(join(dir, "docs"), { recursive: true });
@@ -125,10 +127,30 @@ function selftest() {
     const expect = (name, got, want) => results.push({ test: name, want, got, pass: got === want ? "PASS" : "FAIL" });
     const ev = (hook, tool, ti, event = "PreToolUse") => run(hook, { hook_event_name: event, tool_name: tool, tool_input: ti, session_id: "st", tool_use_id: "tu-" + Math.random() });
 
+    // Regressions use synthetic commands only; no env file is read and no push is executed.
+    expect("PowerShell env read → deny", decision(ev("bash_guard.mjs", "Bash", { command: "Get-Content -LiteralPath '.env.local'" })), "deny");
+    expect("PowerShell env names → allowed", decision(ev("bash_guard.mjs", "Bash", { command: "Get-Content .env.example" })), "none");
+    expect("implicit git push on main → ask", decision(ev("bash_guard.mjs", "Bash", { command: "git push" })), "ask");
+    const unstamped = run("session.mjs", { hook_event_name: "SessionStart", session_id: "unstamped" });
+    expect("unstamped docs visible at startup", unstamped.out.hookSpecificOutput?.additionalContext?.includes("unstamped") ? "yes" : "no", "yes");
+    for (const eol of ["\n", "\r\n"]) {
+      const doc = "docs/stamp-test.md";
+      const text = ["---", "doc: STAMP", "last_verified_commit: none", "---", "# Body", "last_verified_commit: body text", ""].join(eol);
+      writeFileSync(join(dir, doc), text);
+      const result = spawnSync("node", [join(dir, ".claude/harness/harness.mjs"), "stamp", doc], {
+        cwd: dir, encoding: "utf8", env: { ...process.env, CLAUDE_PROJECT_DIR: dir },
+      });
+      const stamped = readFileSync(join(dir, doc), "utf8");
+      const sha = sh("git", ["rev-parse", "--short", "HEAD"]).trim();
+      expect(`${eol === "\n" ? "LF" : "CRLF"} stamp preserves one frontmatter and body`,
+        result.status === 0 && stamped === text.replace("last_verified_commit: none", `last_verified_commit: ${sha}`) ? "yes" : "no", "yes");
+    }
+
     // branch policy
     expect("code edit on main → deny", decision(ev("edit_guard.mjs", "Write", { file_path: join(dir, "src/a.ts"), content: "x" })), "deny");
     expect("docs edit on main → allowed", decision(ev("edit_guard.mjs", "Write", { file_path: join(dir, "docs/HANDOFF.md"), content: "x" })), "none");
     sh("git", ["switch", "-qc", "feat/t"]);
+    expect("implicit git push on feature branch → allowed", decision(ev("bash_guard.mjs", "Bash", { command: "git push" })), "none");
     expect("code edit on branch → allowed", decision(ev("edit_guard.mjs", "Write", { file_path: join(dir, "src/a.ts"), content: "x" })), "none");
     // read-only
     expect("edit .env.local → deny", decision(ev("edit_guard.mjs", "Edit", { file_path: join(dir, ".env.local"), old_string: "1", new_string: "2" })), "deny");

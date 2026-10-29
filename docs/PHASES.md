@@ -1,7 +1,7 @@
 ---
 doc: PHASES
-last_verified_commit: none
-last_updated: 2026-10-17
+last_verified_commit: a37f180
+last_updated: 2026-10-28
 owner: Harris Shamsi
 budget: 5 weekends
 ---
@@ -12,8 +12,8 @@ budget: 5 weekends
 
 | Order | Phase | Goal | Est. | Status |
 |---|---|---|---|---|
-| 1 | P0 | Monorepo, CI, accounts, reserve npm name | 0.5 day | in progress (M0.1–M0.2 done locally; M0.3 accounts pending) |
-| 2 | P1 | Engine + fixtures (deterministic, adapter boundary) | 1.5 days | not started |
+| 1 | P0 | Monorepo, CI, accounts, reserve npm name | 0.5 day | M0.1–M0.2 run-checked incl. CI; M0.3 partial; GATE-0 open (SEC-100 evidence pending) |
+| 2 | P1 | Engine + fixtures (deterministic, adapter boundary) | 1.5 days | M1.1 extraction slice implemented; M1.2–M1.5 not started; GATE-1 open |
 | 3 | P2 | GitHub App PR check, Verified-only | 1.5 days | not started |
 | 4 | P3 | LLM layer (BYOK, Judgement, fix text) | 1 day | not started |
 | 5 | P4 | Web: landing + dashboard | 1 day | not started |
@@ -36,6 +36,7 @@ budget: 5 weekends
 
 ## P1 — Engine
 - M1.1 Parse + extract (REQ-003)
+  - 2026-10-28: `extractClaims(markdown, file)` returns candidates with source kind and one-based line; inline code, relative/reference links and images, anchors, explicit imports, shell fences. Tests cover LF/CRLF, nested markdown, exclusions and UTF-8 size cap. No verification yet; per-file execution deadline remains a GATE-1 security gap.
 - M1.2 Classify + verify 8 claim types (REQ-004), git rename detection; `RepoIndex` interface + `CloneRepoIndex`; symbols via `@ast-grep/napi` (ADR-016)
 - M1.3 False-positive guards + suppression (REQ-005)
 - M1.4 Edit-mode resolution + `.unstale.yml` parsing incl. `local:` keys (REQ-006, REQ-013)

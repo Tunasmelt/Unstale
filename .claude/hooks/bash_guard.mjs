@@ -36,6 +36,14 @@ if (event === "PreToolUse") {
       preDecision("ask", `[harness ${h.id}] HARD STOP: ${h.reason} Needs the user's explicit go.`);
     }
   }
+  // An omitted refspec uses Git's configured default, which can target a protected branch.
+  // Ask on protected branches even when the command does not spell out "main".
+  const bp = cfg.branchPolicy || {};
+  const current = git(["branch", "--show-current"]);
+  if ((bp.protected || []).includes(current) && /\bgit\s+push\b/i.test(cmd)) {
+    hit("HS-push-main", { branch: current });
+    preDecision("ask", `[harness HS-push-main] Pushing from protected branch '${current}' needs the user's explicit go.`);
+  }
   process.exit(0);
 }
 

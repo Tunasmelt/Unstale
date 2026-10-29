@@ -25,6 +25,8 @@ jobs:
       - run: pnpm -r lint
       - run: pnpm -r typecheck
       - run: pnpm -r test
+      - run: node .claude/harness/harness.mjs doctor
+      - run: node .claude/harness/harness.mjs selftest
       - run: pnpm audit --audit-level=high # SEC-080
       - uses: actions/setup-python@v5
         with:
