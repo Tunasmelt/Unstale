@@ -97,4 +97,4 @@ Contribution rules, including what agents may never do: [CLAUDE.md](CLAUDE.md) (
 
 ## License
 
-MIT
+[MIT](LICENSE)
