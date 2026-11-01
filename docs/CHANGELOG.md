@@ -9,6 +9,9 @@ last_verified_commit: none
 
 ## [Unreleased]
 
+### 2026-11-01 — Project README
+- `README.md` added: pitch, pre-alpha status, claim types, Verified vs Judgement, planned surfaces, privacy summary, layout, dev commands, doc index. LICENSE file still missing.
+
 ### 2026-10-28 — Harness corrections, progress review, M1.1 extraction
 - Harness: CRLF-preserving stamps, all non-fresh docs visible at startup, PowerShell env-content guard, implicit protected-branch push guard, doctor validates deny regexes. Selftest adds seven regressions (42 total), excludes local `.claude/data` from scratch copies; CI runs doctor/selftest.
 - AGENTS.md loads shared rules for Codex and documents instruction-only enforcement.
