@@ -1,5 +1,7 @@
 # Unstale
 
+Shared project rules for Claude Code and Codex (`AGENTS.md` is the Codex entry point). Executable hooks in `.claude/settings.json` run in Claude Code only; other agents follow these rules as instructions and run diagnostics explicitly.
+
 Keeps docs true while you code and on every PR: flags doc lines your changes made false and offers one-click fixes. Web-first (GitHub App + dashboard) with an optional local CLI + MCP server (ADR-012). MIT.
 Stack: Next.js 16/Vercel (`apps/web`) · Convex (`convex/`) · Clerk · TS worker on Render (`apps/worker`, Hono, Docker with git + ripgrep) · engine (`packages/engine`, pure TS, `RepoIndex` adapters, `@ast-grep/napi`, ADR-016) · CLI + MCP (`apps/cli`, npm `unstale`, Node ≥ 20, `@modelcontextprotocol/sdk`, `@napi-rs/keyring`) · Vercel AI SDK v7 · pnpm workspaces · Zod at every boundary.
 Test: `pnpm -r test 2>&1 | tail -n 25` · Lint/types: `pnpm -r lint && pnpm -r typecheck` · Doc checks: `pnpm check:docs` (run after any doc edit)

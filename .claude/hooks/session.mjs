@@ -134,10 +134,10 @@ if (event === "SessionStart") {
   const h = readText(handoffPath);
   if (h && !isTemplate(h)) lines.push(`[harness] ${handoffPath}:\n` + h.split("\n").slice(0, cfg.handoff?.maxLines || 40).join("\n"));
   try {
-    const stale = drift().filter((r) => r.status === "stale");
+    const stale = drift().filter((r) => r.status !== "fresh");
     if (stale.length) {
       if ((input.source || "startup") === "startup") hit("R-drift", { docs: stale.map((r) => r.doc) });
-      lines.push(`[harness] stale docs: ${stale.map((r) => r.doc).join(", ")} (code changed since last verified).`);
+      lines.push(`[harness] docs needing review: ${stale.map((r) => `${r.doc} (${r.status})`).join(", ")}.`);
     }
   } catch {}
   try {

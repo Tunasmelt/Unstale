@@ -1,6 +1,6 @@
 ---
 doc: SETUP
-last_updated: 2026-10-18
+last_updated: 2026-10-28
 owner: Harris Shamsi
 ---
 
@@ -8,9 +8,21 @@ owner: Harris Shamsi
 
 > Steps only the owner can do: they need your accounts, passwords or payment. Never paste keys, private keys or secrets into chat, docs or commits; they go straight into the platform's env settings (SECURITY §4).
 
+## Status reconciliation — 2026-10-28
+
+| Item | Evidence / status |
+|---|---|
+| Convex, Clerk, Vercel | Connected per owner on 2026-10-18 (§5); application integrations remain unimplemented |
+| npm `unstale` reservation, 2FA and trusted publishing | 2026-10-28: package prepared outside repo; npm registry returns 404; browser account `forklift22` requires security-key 2FA for CLI login. Login/publication and package publishing controls pending |
+| GitHub App `unstale-dev` and test-repo installation | Owner confirmation pending |
+| Render workspace and GitHub connection | Owner confirmation pending; deployment belongs to P2 |
+| `unstale.dev` ownership | Runbook records registration on 2026-10-12; owner confirmation pending |
+
+M0.3 is partially complete. Account setup does not block offline P1 engine work; web initialisation remains P4.
+
 ## 1. npm package `unstale`
 
-Free as of 2026-10-17. Reserve it now; the real CLI publishes from CI in P5 (SEC-100).
+Registry returned 404 on 2026-10-28. Reservation package prepared at `C:/Users/user/Desktop/unstale-placeholder` (`unstale@0.0.1`); `npm pack --dry-run --ignore-scripts --json` and `npm publish --dry-run --ignore-scripts --access public --json` exit 0 and include only README.md/package.json. Not published yet: npm CLI login is awaiting the owner's security-key challenge as `forklift22`. The real CLI publishes from CI in P5 (SEC-100).
 
 1. Create an account at <https://www.npmjs.com/signup> and verify the email.
 2. Turn on two-factor auth: avatar → **Account** → **Two-Factor Authentication**, mode **Authorization and writes** (a security key or authenticator app).
@@ -47,6 +59,8 @@ Free as of 2026-10-17. Reserve it now; the real CLI publishes from CI in P5 (SEC
 5. Lock it down on npmjs.com → package **unstale** → **Settings**:
    - **Publishing access:** require two-factor authentication and disallow tokens.
    - **Trusted Publisher:** GitHub Actions, organisation/user `Tunasmelt`, repository `Unstale`, workflow `release.yml` (added in P5). From then on CI publishes with provenance and no npm token exists (SEC-100).
+
+   Current npm docs require the named workflow to exist in `.github/workflows/` in the GitHub repository. `release.yml` is not present yet; trusted publishing remains pending until that workflow lands. Reference: https://docs.npmjs.com/trusted-publishers/
 
 ## 2. GitHub App `unstale-dev`
 

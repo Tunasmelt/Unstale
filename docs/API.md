@@ -1,7 +1,7 @@
 ---
 doc: API
-last_verified_commit: none
-last_updated: 2026-10-18
+last_verified_commit: a37f180
+last_updated: 2026-10-28
 owner: Harris Shamsi
 openapi_source: none yet — worker (Hono) to export via zod-openapi in P2; Convex functions listed by hand
 ---
@@ -75,6 +75,12 @@ Status: `active` · `deprecated` · `removed`
 | EXT-07 | Model Context Protocol (stdio) | Local MCP server for coding agents | COMP-09 | spec 2025-11-25 (SDK default); 2026-07-28 tracked | @modelcontextprotocol/sdk@1.32.1 | none | findings + diffs to the local agent only | 2026-10-17 | active |
 | EXT-08 | OS keychain (macOS Keychain, Windows Credential Manager, Secret Service) | Store CLI token | COMP-08 | n/a | @napi-rs/keyring@2.1.1 | CLI tokens | CLI token | 2026-10-17 | active |
 | EXT-09 | npm registry | Publish `unstale` CLI | COMP-08 | n/a | none | none (OIDC trusted publishing) | package tarball | 2026-10-17 | active |
+| EXT-10 | markdown-it | Markdown parsing and source maps | COMP-07 | token/ruler API | markdown-it@15.0.3 | none | none (in-process) | 2026-10-28 | active |
+
+### EXT-10 — markdown-it
+- **Docs used:** https://markdown-it.github.io/markdown-it/ · installed package TypeScript definitions (`dist/markdown-it.d.mts`).
+- Exact version 15.0.3, MIT licence, maintained upstream `markdown-it/markdown-it`; native TypeScript declarations included. No extra type dependency. Dependency install used `--ignore-scripts`; audit at high threshold exits 0 (two existing moderate advisories).
+- Uses block `Token.map` plus public inline ruler APIs (`enableOnly`, `getRules`, `before`, `at`) to retain source offsets; never renders HTML or executes document content.
 
 ### EXT-01 — GitHub
 - **Docs used:** https://docs.github.com/en/rest/about-the-rest-api/api-versions · https://docs.github.com/en/rest/checks/runs · https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api · https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-an-installation-access-token-for-a-github-app · https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks
